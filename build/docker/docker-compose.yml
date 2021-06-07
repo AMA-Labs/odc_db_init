@@ -2,15 +2,6 @@ version: '3.7'
 services:
   indexer:
     image: ${INDEXER_BASE_IMG}
-    # ${OUT_IMG_REPO}_base:odc1.8.3
-    # jcrattzama/odc_manual_indexer:odc1.8.3
-    # jcrattzama/odc_manual_indexer_init_base:odc1.8.3
-    # build:
-    #   context: ${DKR_CMP_CONTEXT}
-    #   dockerfile: build/docker/indexer/Dockerfile
-    #   args:
-    #     BASE_IMG: ${INDEXER_BASE_IMG}
-    #     WORKDIR: ${WORKDIR}
     deploy:
       resources:
         limits:
@@ -33,22 +24,3 @@ services:
       - POSTGRES_USER=${ODC_DB_USER}
       - POSTGRES_PASSWORD=${ODC_DB_PASSWORD}
       - N=1000
-#   manual_init:
-#     image: jcrattzama/odc_manual_indexer:odc1.8.3
-#     environment:
-#       - ODC_DB_HOSTNAME=odc_db_init
-#       - ODC_DB_DATABASE=${ODC_DB_DATABASE}
-#       - ODC_DB_USER=${ODC_DB_USER}
-#       - ODC_DB_PASSWORD=${ODC_DB_PASSWORD}
-#       - ODC_DB_PORT=${ODC_DB_PORT}
-#   odc_db_init:
-#     image: jcrattzama/odc_db_init:odc1.8.3
-#     build:
-#       context: ${DKR_CMP_CONTEXT}
-#       dockerfile: build/docker/odc_db_init/Dockerfile
-#       args:
-#         - POSTGRES_DB=${ODC_DB_DATABASE}
-#         - POSTGRES_USER=${ODC_DB_USER}
-#         - POSTGRES_PASSWORD=${ODC_DB_PASSWORD}
-#     environment:
-#       - N=1000
