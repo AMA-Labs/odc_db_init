@@ -5,16 +5,20 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '2'
+          cpus: '6'
           memory: 4 GB
     environment:
-      - ODC_DB_HOSTNAME=${ODC_DB_HOSTNAME}
-      - ODC_DB_DATABASE=${ODC_DB_DATABASE}
-      - ODC_DB_USER=${ODC_DB_USER}
-      - ODC_DB_PASSWORD=${ODC_DB_PASSWORD}
-      - ODC_DB_PORT=${ODC_DB_PORT}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      ODC_DB_HOSTNAME: ${ODC_DB_HOSTNAME}
+      ODC_DB_DATABASE: ${ODC_DB_DATABASE}
+      ODC_DB_USER: ${ODC_DB_USER}
+      ODC_DB_PASSWORD: ${ODC_DB_PASSWORD}
+      ODC_DB_PORT: ${ODC_DB_PORT}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      GOOGLE_APPLICATION_CREDENTIALS: /home/jovyan/.config/odc-gee/credentials.json
+      REGIONS_CONFIG: /home/jovyan/.config/odc-gee/regions.json
+    volumes:
+      - ${DKR_CMP_CONTEXT}/odc_gee/config:/home/jovyan/.config/odc-gee:ro
   odc_db:
     image: postgres:10-alpine
     environment:
