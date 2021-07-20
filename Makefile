@@ -81,7 +81,7 @@ LS7_C2_PROD_DEF_PATH = ${LANDSAT_C2_PROD_DEFS_DIR}/ls7_l2_c2.yaml
 LS7_C2_IDX_SCR_BASE_CMD = \
 	python3 ${LANDSAT_C2_IDX_SCR_DIR}/ls7_l2_c2.py \
 	   usgs-landsat -p collection02/level-2/standard/etm --suffix=MTL.xml
-### Google Earth Engine dataset
+### Landsat 7 Google Earth Engine
 LS7_C1_T1_GEE_PROD_DEF_PATH = ${LANDSAT_C1_PROD_DEFS_DIR}/ls7_l2_c1_t1_google.yaml
 LS7_C1_T1_GEE_PROD_NAME = ls7_l2_c1_t1_google
 LS7_C1_T2_GEE_PROD_DEF_PATH = ${LANDSAT_C1_PROD_DEFS_DIR}/ls7_l2_c1_t2_google.yaml
@@ -91,11 +91,15 @@ LS8_C2_PROD_DEF_PATH = ${LANDSAT_C2_PROD_DEFS_DIR}/ls8_l2_c2.yaml
 LS8_C2_IDX_SCR_BASE_CMD = \
 	python3 ${LANDSAT_C2_IDX_SCR_DIR}/ls8_l2_c2.py \
 	   usgs-landsat -p collection02/level-2/standard/oli-tirs --suffix=MTL.xml
-## Google Earth Engine dataset
+### Landsat 8 Google Earth Engine
 LS8_C1_T1_GEE_PROD_DEF_PATH = ${LANDSAT_C1_PROD_DEFS_DIR}/ls8_l2_c1_t1_google.yaml
 LS8_C1_T1_GEE_PROD_NAME = ls8_l2_c1_t1_google
 LS8_C1_T2_GEE_PROD_DEF_PATH = ${LANDSAT_C1_PROD_DEFS_DIR}/ls8_l2_c1_t2_google.yaml
 LS8_C1_T2_GEE_PROD_NAME = ls8_l2_c1_t2_google
+# Sentinel-1
+S1_PROD_DEFS_DIR = ${PROD_DEF_DIR}/Sentinel-1
+## Sentinel-1 GRD Google Earth Engine
+S1_GRD_GEE_PROD_DEF_PATH = ${S1_PROD_DEFS_DIR}/s1_grd_google.yaml
 # Mavic Mini
 WEBODM_MAVICMINI_PROD_DEFS_DIR = ${PROD_DEF_DIR}/WebODM_MavicMini
 ## WebODM_MavicMini_RGBA
@@ -189,6 +193,7 @@ db-index-va-cube:
 	   datacube product add ${LS7_C1_T2_GEE_PROD_DEF_PATH}; \
 	   datacube product add ${LS8_C1_T1_GEE_PROD_DEF_PATH}; \
 	   datacube product add ${LS8_C1_T2_GEE_PROD_DEF_PATH}; \
+	   datacube product add ${S1_GRD_GEE_PROD_DEF_PATH}; \
 	   datacube product add ${LS5_C2_PROD_DEF_PATH}; \
 	   ${LS5_C2_IDX_SCR_BASE_CMD} ${VIRGINIA_EXTENTS_STD_IDX_SCR_FMT} &> ls5_l2_c2_ind.txt & \
 	   datacube product add ${LS7_C2_PROD_DEF_PATH}; \
