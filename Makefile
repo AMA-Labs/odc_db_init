@@ -195,13 +195,16 @@ db-index-va-cube:
 	   datacube product add ${LS8_C1_T2_GEE_PROD_DEF_PATH}; \
 	   datacube product add ${S1_GRD_GEE_PROD_DEF_PATH}; \
 	   datacube product add ${LS5_C2_PROD_DEF_PATH}; \
-	   ${LS5_C2_IDX_SCR_BASE_CMD} ${VIRGINIA_EXTENTS_STD_IDX_SCR_FMT} &> ls5_l2_c2_ind.txt & \
+	   ${LS5_C2_IDX_SCR_BASE_CMD} &> ls5_l2_c2_ind.txt & \
 	   datacube product add ${LS7_C2_PROD_DEF_PATH}; \
-	   ${LS7_C2_IDX_SCR_BASE_CMD} ${VIRGINIA_EXTENTS_STD_IDX_SCR_FMT} &> ls7_l2_c2_ind.txt & \
+	   ${LS7_C2_IDX_SCR_BASE_CMD} &> ls7_l2_c2_ind.txt & \
 	   datacube product add ${LS8_C2_PROD_DEF_PATH}; \
-	   ${LS8_C2_IDX_SCR_BASE_CMD} ${VIRGINIA_EXTENTS_STD_IDX_SCR_FMT} &> ls8_l2_c2_ind.txt & \
+	   ${LS8_C2_IDX_SCR_BASE_CMD} &> ls8_l2_c2_ind.txt & \
 	   wait \
 	  "
+# ${LS5_C2_IDX_SCR_BASE_CMD} ${VIRGINIA_EXTENTS_STD_IDX_SCR_FMT} &> ls5_l2_c2_ind.txt & \
+# ${LS7_C2_IDX_SCR_BASE_CMD} ${VIRGINIA_EXTENTS_STD_IDX_SCR_FMT} &> ls7_l2_c2_ind.txt & \
+# ${LS8_C2_IDX_SCR_BASE_CMD} ${VIRGINIA_EXTENTS_STD_IDX_SCR_FMT} &> ls8_l2_c2_ind.txt & \
 
 # Index Landsat Collection 1 data on GEE, to be queried with the normal `Datacube` object.
 # (Recommend against - takes index database capacity and ODC-GEE is better suited to using the
