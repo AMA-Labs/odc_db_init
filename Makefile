@@ -1,7 +1,10 @@
 SHELL:=/bin/bash
 compose_file = build/docker/docker-compose.yml
+# Set the project name to the path - making underscore the path separator.
+# Remove the leading slash and use lowercase since docker-compose will.
+project_name=$(shell PWD_var=$$(pwd); PWD_no_lead_slash=$${PWD_var:1}; echo $${PWD_no_lead_slash//\//_} | awk '{print tolower($$0)}' | cat)
 # --compatibility since we are using `docker stack deploy` for resource limits.
-docker_compose = docker-compose --compatibility --project-directory build/docker -f ${compose_file}
+docker_compose = docker-compose --compatibility --project-directory build/docker -f ${compose_file} -p $(project_name)
 
 # Make the environment variables of the environment available here.
 export $(cat build/docker/.env)
@@ -11,8 +14,8 @@ ODC_VER?=1.8.3
 ## Indexer ##
 INDEXER_BASE_IMG_REPO?=jcrattzama/odc_manual_indexer
 INDEXER_BASE_IMG_VER?=
-INDEXER_BASE_IMG?=${INDEXER_BASE_IMG_REPO}:odc${ODC_VER}${INDEXER_BASE_IMG_VER}
-export INDEXER_BASE_IMG
+export INDEXER_BASE_IMG?=${INDEXER_BASE_IMG_REPO}:odc${ODC_VER}${INDEXER_BASE_IMG_VER}
+export INDEXER_BASE_DIR?=/manual_indexer
 ## End Indexer ##
 
 ## Database ##
@@ -54,7 +57,7 @@ db-init:
 	  "datacube system init"
 
 # data-copy:	
-# 	docker cp data docker_indexer_1:/Datacube/data
+# 	docker cp data $(project_name)_indexer_1:/Datacube/data
 # 	$(docker_compose) exec -T indexer conda run -n odc bash -c \
 # 	  "mv /Datacube/data /Datacube/tmp"
 
@@ -101,7 +104,7 @@ S1_PROD_DEFS_DIR = ${PROD_DEF_DIR}/Sentinel-1
 ## Sentinel-1 GRD Google Earth Engine
 S1_GRD_GEE_PROD_DEF_PATH = ${S1_PROD_DEFS_DIR}/s1_grd_google.yaml
 # Mavic Mini
-WEBODM_MAVICMINI_PROD_DEFS_DIR = ${PROD_DEF_DIR}/WebODM_MavicMini
+WEBODM_MAVICMINI_PROD_DEFS_DIR = ${PROD_DEF_DIR}/drones/WebODM_MavicMini
 ## WebODM_MavicMini_RGBA
 WEBODM_MAVICMINI_RGBA_PROD_DEF_PATH = ${WEBODM_MAVICMINI_PROD_DEFS_DIR}/WebODM_MavicMini_RGBA.yaml
 ### End Indexing Env Vars ###
@@ -135,15 +138,15 @@ db-index-drone-paper:
 # 	Copy the data into its final directory for indexing.
 	$(docker_compose) exec -T indexer conda run -n odc bash -c \
 	  "mkdir -p /Datacube/data/prod_defs; \
-	   cp /Datacube/tmp/prod_defs/ls8_l2_c2_colorado_springs.yaml \
+	   cp ${INDEXER_BASE_DIR}/data/prod_defs/ls8_l2_c2_colorado_springs.yaml \
 	      /Datacube/data/prod_defs; \
 	   mkdir -p /Datacube/data/tiles; \
-	   cp -r /Datacube/tmp/tiles/ls8_l2_c2_colorado_springs \
+	   cp -r ${INDEXER_BASE_DIR}/data/tiles/ls8_l2_c2_colorado_springs \
 	      /Datacube/data/tiles/ls8_l2_c2_colorado_springs; \
-	   cp -r /Datacube/tmp/tiles/WebODM_MavicMini_RGBA \
+	   cp -r ${INDEXER_BASE_DIR}/data/tiles/WebODM_MavicMini_RGBA \
 	      /Datacube/data/tiles/WebODM_MavicMini_RGBA; \
-	   rm -rf /Datacube/tmp \
 	  "
+#	  rm -rf /Datacube/tmp \
 # 	Add products from this repository.
 	$(docker_compose) exec -T indexer conda run -n odc bash -c \
 	  "datacube product add /Datacube/data/prod_defs/**"
@@ -152,7 +155,7 @@ db-index-drone-paper:
 ## 	MavicMini Colorado Springs
 	$(docker_compose) exec -T indexer conda run -n odc bash -c \
 	  "datacube dataset add /Datacube/data/tiles/ls8_l2_c2_colorado_springs/LC08_L2SP_033033_20210425_20210501_02_T1/metadata.json; \
-	   python3 ${IDX_SCR_DIR}/drone_indexer.py /Datacube/data/tiles/WebODM_MavicMini_RGBA WebODM_MavicMini_RGBA
+	   python3 ${IDX_SCR_DIR}/drone_indexer.py /Datacube/data/tiles/WebODM_MavicMini_RGBA WebODM_MavicMini_RGBA \
 	  "
 
 db-index-colorado-texas:
@@ -229,9 +232,9 @@ db-index-cdc-trn:
 	   mkdir -p /Datacube/data/tiles \
 	  "
 	docker cp data/prod_defs/ls8_l2_c2_path_123_row_032.yaml \
-			  docker_indexer_1:/Datacube/data/prod_defs/ls8_l2_c2_path_123_row_032.yaml
+			  $(project_name)_indexer_1:/Datacube/data/prod_defs/ls8_l2_c2_path_123_row_032.yaml
 	docker cp data/tiles/ls8_l2_c2_path_123_row_032 \
-			  docker_indexer_1:/Datacube/data/tiles/ls8_l2_c2_path_123_row_032
+			  $(project_name)_indexer_1:/Datacube/data/tiles/ls8_l2_c2_path_123_row_032
 # 	Add products from this repository.
 	$(docker_compose) exec -T indexer conda run -n odc bash -c \
 	  "datacube product add /Datacube/data/prod_defs/**"
@@ -281,7 +284,8 @@ db-index-world-landsat:
 
 data-compress:
 	$(docker_compose) exec -T indexer conda run -n odc bash -c \
-	  "tar -czf /Datacube/data.tar.gz -C /Datacube/data .; rm -rf /Datacube/data"
+	  "tar -czf /Datacube/data.tar.gz -C /Datacube/data ."
+#	  ; rm -rf /Datacube/data
 
 ## End Local Data Compression ##
 
@@ -293,7 +297,7 @@ db-dump:
 docker-commit:
 #	Remove the file denoting that the container is already running.
 	$(docker_compose) exec -T indexer bash -c "rm /etc/container_started"
-	docker commit docker_indexer_1 ${OUT_IMG}
+	docker commit $(project_name)_indexer_1 ${OUT_IMG}
 
 ## Full Pipeline ##
 OUT_IMG_VER_DRONE_PAPER ?= 

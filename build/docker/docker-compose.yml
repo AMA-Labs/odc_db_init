@@ -19,6 +19,7 @@ services:
       REGIONS_CONFIG: /home/jovyan/.config/odc-gee/regions.json
     volumes:
       - ${DKR_CMP_CONTEXT}/odc_gee/config:/home/jovyan/.config/odc-gee:ro
+      - ${DKR_CMP_CONTEXT}/data:${INDEXER_BASE_DIR}/data
   odc_db:
     image: postgres:10-alpine
     environment:
